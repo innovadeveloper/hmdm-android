@@ -72,7 +72,7 @@ android {
         // Not recommended for security purposes!
         buildConfigField("Boolean", "TRUST_ANY_CERTIFICATE", "false")
         // A shared secret to sign server config requests and MQTT (Push) messages
-        buildConfigField("String", "REQUEST_SIGNATURE", "\"changeme-C3z9vi54\"")
+        buildConfigField("String", "REQUEST_SIGNATURE", "\"hmdm_secret_key_2024\"")
         // Set this parameter to true if the server signature should be checked
         // (additional protection against Man-In-The-Middle attacks)
         buildConfigField("Boolean", "CHECK_SIGNATURE", "false")

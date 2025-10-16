@@ -27,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/zxing_result_view"
         tools:context="com.hmdm.launcher.ui.AdminActivity"
         android:gravity="center_horizontal">
 
@@ -58,6 +59,8 @@
             />
 
         <Button
+            android:background="@color/white"
+            android:textColor="@color/zxing_result_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
@@ -67,6 +70,8 @@
             android:onClick="allowSettings"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -75,6 +80,8 @@
             android:onClick="clearRestrictions"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -83,6 +90,8 @@
             android:onClick="changeDeviceId"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
@@ -91,6 +100,8 @@
             android:onClick="changeServerUrl"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,6 +111,8 @@
             android:onClick="updateConfig"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:id="@+id/systemLauncherButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,6 +122,8 @@
             android:onClick="exitToSystemLauncher"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:id="@+id/resetPermissionsButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,6 +133,8 @@
             android:onClick="resetPermissions"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:id="@+id/resetNetworkButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -127,6 +144,8 @@
             android:onClick="resetNetworkPolicy"/>
 
         <Button
+                android:background="@color/white"
+                android:textColor="@color/zxing_result_view"
             android:id="@+id/rebootButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

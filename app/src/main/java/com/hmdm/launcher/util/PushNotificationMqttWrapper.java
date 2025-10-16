@@ -111,7 +111,9 @@ public class PushNotificationMqttWrapper {
             connectOptions.setKeepAliveInterval(keepaliveTime);
         }
         connectOptions.setUserName("hmdm");
-        connectOptions.setPassword(CryptoHelper.getSHA1String("hmdm" + BuildConfig.REQUEST_SIGNATURE).toCharArray());
+        String pass = CryptoHelper.getSHA1String("hmdm" + BuildConfig.REQUEST_SIGNATURE);
+//        String pass = "C9110BA6E18ADCED81BFF75E647D4AF355A8EEC8";
+        connectOptions.setPassword(pass.toCharArray());
         String serverUri = "tcp://" + host + ":" + port;
 
         if (client != null) {
@@ -231,6 +233,7 @@ public class PushNotificationMqttWrapper {
                         String messageType = obj.getString("messageType");
                         PushMessageJson msg = new PushMessageJson(messageType, obj.optJSONObject("payload"));
                         PushNotificationProcessor.process(msg, context);
+                        Log.i(Const.LOG_TAG, "topic#messageArrived(): " + new String(message.getPayload()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

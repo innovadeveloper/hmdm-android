@@ -42,7 +42,7 @@ import com.hmdm.launcher.util.RemoteLogger;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
-public class GetServerConfigTask extends AsyncTask< Void, Integer, Integer > {
+    public class GetServerConfigTask extends AsyncTask< Void, Integer, Integer > {
 
     private Context context;
     private SettingsHelper settingsHelper;
