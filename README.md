@@ -24,6 +24,11 @@ Open the project directory in Android Studio (use default settings).
    
     `dpm set-device-owner com.hmdm.launcher/.AdminReceiver`
 
+`
+adb shell dpm set-device-owner com.hmdm.launcher/.AdminReceiver
+adb shell dpm remove-active-admin com.hmdm.launcher/.AdminReceiver
+`
+
 ## Building the APK
 
 Build the APK after you successfully build the app.
