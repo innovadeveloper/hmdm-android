@@ -95,6 +95,13 @@ public class AdminActivity extends BaseActivity {
                 createAndShowInfoDialog();
             }
         });
+
+        binding.resetSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProUtils.emergencyRemoveDeviceOwner(AdminActivity.this);
+            }
+        });
     }
 
     @Override

@@ -39,6 +39,8 @@ import com.hmdm.launcher.server.ServerServiceKeeper;
 import com.hmdm.launcher.util.PushNotificationMqttWrapper;
 import com.hmdm.launcher.util.RemoteLogger;
 
+import java.util.Arrays;
+
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
@@ -138,8 +140,10 @@ import retrofit2.Response;
                         settingsHelper.updateConfig(settingsHelper.getConfig());
                 }
 
+                String data = new ObjectMapper().writeValueAsString(serverConfig);
+                Log.i(Const.LOG_TAG, "data : " + data);
                 ProUtils.processConfig(context, serverConfig);
-
+                // RemoteLogger.log(context, Const.LOG_INFO, "Kiosk mode started for " + kioskApp);
                 return Const.TASK_SUCCESS;
             } else {
                 return isDeviceNotFound ? Const.TASK_ERROR : Const.TASK_NETWORK_ERROR;
@@ -151,6 +155,8 @@ import retrofit2.Response;
 
         return Const.TASK_NETWORK_ERROR;
     }
+
+//        Log.i(Const.LOG_TAG, "[processConfig] step 01, configJson -> " + configJson);
 
     private ServerConfig getServerConfigPlain(String deviceId, String signature) throws Exception {
         Response<ServerConfigResponse> response = null;
