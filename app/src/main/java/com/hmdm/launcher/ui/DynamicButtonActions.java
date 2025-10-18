@@ -14,11 +14,7 @@ public class DynamicButtonActions {
     public static final String ACTION_REBOOT = "reboot";
     public static final String ACTION_RESET_SETTINGS = "reset_settings";
     
-    // Acciones adicionales/dinámicas
-    public static final String ACTION_SYSTEM_LOGS = "system_logs";
-    public static final String ACTION_NETWORK_INFO = "network_info";
-    public static final String ACTION_BATTERY_STATUS = "battery_status";
-    public static final String ACTION_INSTALLED_APPS = "installed_apps";
-    public static final String ACTION_CLEAR_CACHE = "clear_cache";
-    public static final String ACTION_EXPORT_CONFIG = "export_config";
+    // Acciones de control del status bar
+    public static final String ACTION_LOCK_STATUS_BAR = "lock_status_bar";
+    public static final String ACTION_UNLOCK_STATUS_BAR = "unlock_status_bar";
 }

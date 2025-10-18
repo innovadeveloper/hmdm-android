@@ -19,6 +19,7 @@
 
 package com.hmdm.launcher.ui;
 
+import android.annotation.SuppressLint;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -278,13 +279,17 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
         
         buttons.add(new DynamicButton("RESET SETTINGS (DEV)", ACTION_RESET_SETTINGS));
         
-        // Botones adicionales dinámicos
-        buttons.add(new DynamicButton("Logs del Sistema", ACTION_SYSTEM_LOGS));
-        buttons.add(new DynamicButton("Información de Red", ACTION_NETWORK_INFO));
-        buttons.add(new DynamicButton("Estado de Batería", ACTION_BATTERY_STATUS));
-        buttons.add(new DynamicButton("Aplicaciones Instaladas", ACTION_INSTALLED_APPS));
-        buttons.add(new DynamicButton("Limpiar Cache", ACTION_CLEAR_CACHE));
-        buttons.add(new DynamicButton("Exportar Configuración", ACTION_EXPORT_CONFIG));
+        // Botones de control del status bar
+        buttons.add(new DynamicButton("Bloquear Status Bar", ACTION_LOCK_STATUS_BAR));
+        buttons.add(new DynamicButton("Desbloquear Status Bar", ACTION_UNLOCK_STATUS_BAR));
+        
+//        // Botones adicionales dinámicos
+//        buttons.add(new DynamicButton("Logs del Sistema", ACTION_SYSTEM_LOGS));
+//        buttons.add(new DynamicButton("Información de Red", ACTION_NETWORK_INFO));
+//        buttons.add(new DynamicButton("Estado de Batería", ACTION_BATTERY_STATUS));
+//        buttons.add(new DynamicButton("Aplicaciones Instaladas", ACTION_INSTALLED_APPS));
+//        buttons.add(new DynamicButton("Limpiar Cache", ACTION_CLEAR_CACHE));
+//        buttons.add(new DynamicButton("Exportar Configuración", ACTION_EXPORT_CONFIG));
         
         dynamicButtonAdapter.setDynamicButtons(buttons);
     }
@@ -326,25 +331,15 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
                 ProUtils.emergencyRemoveDeviceOwner(this);
                 break;
                 
-            // Acciones adicionales dinámicas
-            case ACTION_SYSTEM_LOGS:
-                Toast.makeText(this, "Mostrando logs del sistema...", Toast.LENGTH_SHORT).show();
+            // Acciones de control del status bar
+            case ACTION_LOCK_STATUS_BAR:
+//                Toast.makeText(this, "Mostrando logs del sistema...", Toast.LENGTH_SHORT).show();
+                lockStatusBar();
                 break;
-            case ACTION_NETWORK_INFO:
-                Toast.makeText(this, "Obteniendo información de red...", Toast.LENGTH_SHORT).show();
+            case ACTION_UNLOCK_STATUS_BAR:
+                unlockStatusBar();
                 break;
-            case ACTION_BATTERY_STATUS:
-                Toast.makeText(this, "Verificando estado de batería...", Toast.LENGTH_SHORT).show();
-                break;
-            case ACTION_INSTALLED_APPS:
-                Toast.makeText(this, "Listando aplicaciones instaladas...", Toast.LENGTH_SHORT).show();
-                break;
-            case ACTION_CLEAR_CACHE:
-                Toast.makeText(this, "Limpiando cache...", Toast.LENGTH_SHORT).show();
-                break;
-            case ACTION_EXPORT_CONFIG:
-                Toast.makeText(this, "Exportando configuración...", Toast.LENGTH_SHORT).show();
-                break;
+                
             default:
                 Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
@@ -360,6 +355,52 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
     public void clearDynamicButtons() {
         if (dynamicButtonAdapter != null) {
             dynamicButtonAdapter.clearDynamicButtons();
+        }
+    }
+
+    private void lockStatusBar() {
+        try {
+            ComponentName deviceAdmin = LegacyUtils.getAdminComponentName(this);
+            DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (devicePolicyManager != null && devicePolicyManager.isDeviceOwnerApp(getPackageName())) {
+                    devicePolicyManager.addUserRestriction(deviceAdmin, "disallow_status_bar_expansion");
+//                    devicePolicyManager.addUserRestriction(deviceAdmin, );
+                    Toast.makeText(this, "Status Bar bloqueado", Toast.LENGTH_SHORT).show();
+                    RemoteLogger.log(this, Const.LOG_INFO, "Status bar expansion disabled");
+                } else {
+                    Toast.makeText(this, "No se puede bloquear: No es Device Owner", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Función no disponible en Android < 6.0", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al bloquear Status Bar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            RemoteLogger.log(this, Const.LOG_ERROR, "Failed to lock status bar: " + e.getMessage());
+        }
+    }
+
+    @SuppressLint("WrongConstant")
+    private void unlockStatusBar() {
+        try {
+            ComponentName deviceAdmin = LegacyUtils.getAdminComponentName(this);
+            DevicePolicyManager devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+            
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (devicePolicyManager != null && devicePolicyManager.isDeviceOwnerApp(getPackageName())) {
+                    devicePolicyManager.clearUserRestriction(deviceAdmin, "disallow_status_bar_expansion");
+                    Toast.makeText(this, "Status Bar desbloqueado", Toast.LENGTH_SHORT).show();
+                    RemoteLogger.log(this, Const.LOG_INFO, "Status bar expansion enabled");
+                } else {
+                    Toast.makeText(this, "No se puede desbloquear: No es Device Owner", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Función no disponible en Android < 6.0", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al desbloquear Status Bar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            RemoteLogger.log(this, Const.LOG_ERROR, "Failed to unlock status bar: " + e.getMessage());
         }
     }
 }
