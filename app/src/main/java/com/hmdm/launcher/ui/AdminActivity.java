@@ -34,6 +34,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hmdm.launcher.BuildConfig;
 import com.hmdm.launcher.Const;
@@ -49,7 +51,12 @@ import com.hmdm.launcher.util.PushNotificationMqttWrapper;
 import com.hmdm.launcher.util.RemoteLogger;
 import com.hmdm.launcher.util.Utils;
 
-public class AdminActivity extends BaseActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.hmdm.launcher.ui.DynamicButtonActions.*;
+
+public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.OnDynamicButtonClickListener {
 
     private static final String KEY_APP_INFO = "info";
     private SettingsHelper settingsHelper;
@@ -63,6 +70,8 @@ public class AdminActivity extends BaseActivity {
     }
 
     ActivityAdminBinding binding;
+    private RecyclerView dynamicButtonsRecycler;
+    private DynamicButtonAdapter dynamicButtonAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +92,9 @@ public class AdminActivity extends BaseActivity {
         // Currently the QR code contains this parameter, so the button is always visible
         //binding.systemLauncherButton.setVisibility(Utils.isDeviceOwner(this) ? View.GONE : View.VISIBLE);
 
-        if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.M ) {
-            binding.rebootButton.setVisibility(View.GONE);
-        }
+//        if ( Build.VERSION.SDK_INT <= Build.VERSION_CODES.M ) {
+//            binding.rebootButton.setVisibility(View.GONE);
+//        }
 
         settingsHelper = SettingsHelper.getInstance( this );
         binding.deviceId.setText(settingsHelper.getDeviceId());
@@ -96,12 +105,9 @@ public class AdminActivity extends BaseActivity {
             }
         });
 
-        binding.resetSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProUtils.emergencyRemoveDeviceOwner(AdminActivity.this);
-            }
-        });
+
+        setupDynamicButtonsRecyclerView();
+        loadDynamicButtons();
     }
 
     @Override
@@ -242,6 +248,118 @@ public class AdminActivity extends BaseActivity {
             } catch (Exception e) {
                 Toast.makeText(this, R.string.reboot_failed, Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    private void setupDynamicButtonsRecyclerView() {
+        dynamicButtonsRecycler = findViewById(R.id.dynamicButtonsRecycler);
+        dynamicButtonAdapter = new DynamicButtonAdapter(this);
+        dynamicButtonsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        dynamicButtonsRecycler.setAdapter(dynamicButtonAdapter);
+    }
+
+    private void loadDynamicButtons() {
+        List<DynamicButton> buttons = new ArrayList<>();
+        
+        // Botones originales de AdminActivity
+        buttons.add(new DynamicButton(getString(R.string.admin_allow_settings), ACTION_ALLOW_SETTINGS));
+        buttons.add(new DynamicButton(getString(R.string.admin_clear_restrictions), ACTION_CLEAR_RESTRICTIONS));
+        buttons.add(new DynamicButton(getString(R.string.admin_change_device_id), ACTION_CHANGE_DEVICE_ID));
+        buttons.add(new DynamicButton(getString(R.string.admin_change_server_url), ACTION_CHANGE_SERVER_URL));
+        buttons.add(new DynamicButton(getString(R.string.admin_refresh), ACTION_UPDATE_CONFIG));
+        buttons.add(new DynamicButton(getString(R.string.admin_exit), ACTION_EXIT_TO_SYSTEM_LAUNCHER));
+        buttons.add(new DynamicButton(getString(R.string.admin_reset_permissions), ACTION_RESET_PERMISSIONS));
+        buttons.add(new DynamicButton(getString(R.string.admin_reset_network), ACTION_RESET_NETWORK));
+        
+        // Solo agregar botón de reinicio si la versión lo permite
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            buttons.add(new DynamicButton(getString(R.string.reboot), ACTION_REBOOT));
+        }
+        
+        buttons.add(new DynamicButton("RESET SETTINGS (DEV)", ACTION_RESET_SETTINGS));
+        
+        // Botones adicionales dinámicos
+        buttons.add(new DynamicButton("Logs del Sistema", ACTION_SYSTEM_LOGS));
+        buttons.add(new DynamicButton("Información de Red", ACTION_NETWORK_INFO));
+        buttons.add(new DynamicButton("Estado de Batería", ACTION_BATTERY_STATUS));
+        buttons.add(new DynamicButton("Aplicaciones Instaladas", ACTION_INSTALLED_APPS));
+        buttons.add(new DynamicButton("Limpiar Cache", ACTION_CLEAR_CACHE));
+        buttons.add(new DynamicButton("Exportar Configuración", ACTION_EXPORT_CONFIG));
+        
+        dynamicButtonAdapter.setDynamicButtons(buttons);
+    }
+
+    @Override
+    public void onDynamicButtonClick(DynamicButton button) {
+        String action = button.getAction();
+        
+        switch (action) {
+            // Acciones originales de AdminActivity
+            case ACTION_ALLOW_SETTINGS:
+                allowSettings(null);
+                break;
+            case ACTION_CLEAR_RESTRICTIONS:
+                clearRestrictions(null);
+                break;
+            case ACTION_CHANGE_DEVICE_ID:
+                changeDeviceId(null);
+                break;
+            case ACTION_CHANGE_SERVER_URL:
+                changeServerUrl(null);
+                break;
+            case ACTION_UPDATE_CONFIG:
+                updateConfig(null);
+                break;
+            case ACTION_EXIT_TO_SYSTEM_LAUNCHER:
+                exitToSystemLauncher(null);
+                break;
+            case ACTION_RESET_PERMISSIONS:
+                resetPermissions(null);
+                break;
+            case ACTION_RESET_NETWORK:
+                resetNetworkPolicy(null);
+                break;
+            case ACTION_REBOOT:
+                reboot(null);
+                break;
+            case ACTION_RESET_SETTINGS:
+                ProUtils.emergencyRemoveDeviceOwner(this);
+                break;
+                
+            // Acciones adicionales dinámicas
+            case ACTION_SYSTEM_LOGS:
+                Toast.makeText(this, "Mostrando logs del sistema...", Toast.LENGTH_SHORT).show();
+                break;
+            case ACTION_NETWORK_INFO:
+                Toast.makeText(this, "Obteniendo información de red...", Toast.LENGTH_SHORT).show();
+                break;
+            case ACTION_BATTERY_STATUS:
+                Toast.makeText(this, "Verificando estado de batería...", Toast.LENGTH_SHORT).show();
+                break;
+            case ACTION_INSTALLED_APPS:
+                Toast.makeText(this, "Listando aplicaciones instaladas...", Toast.LENGTH_SHORT).show();
+                break;
+            case ACTION_CLEAR_CACHE:
+                Toast.makeText(this, "Limpiando cache...", Toast.LENGTH_SHORT).show();
+                break;
+            case ACTION_EXPORT_CONFIG:
+                Toast.makeText(this, "Exportando configuración...", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    public void addDynamicButton(String title, String action) {
+        if (dynamicButtonAdapter != null) {
+            dynamicButtonAdapter.addDynamicButton(new DynamicButton(title, action));
+        }
+    }
+
+    public void clearDynamicButtons() {
+        if (dynamicButtonAdapter != null) {
+            dynamicButtonAdapter.clearDynamicButtons();
         }
     }
 }

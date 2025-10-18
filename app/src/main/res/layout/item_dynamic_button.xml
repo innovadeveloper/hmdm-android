@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dynamicButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:background="@color/white"
+    android:textColor="@color/zxing_result_view"
+    android:padding="12dp"
+    android:textSize="16sp"
+    android:drawablePadding="8dp"
+    android:gravity="center"
+    android:textAllCaps="false"/>
