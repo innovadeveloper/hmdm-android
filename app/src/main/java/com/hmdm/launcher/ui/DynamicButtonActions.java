@@ -34,5 +34,10 @@ public class DynamicButtonActions {
 
 
 
+    public static final String ACTION_SETUP_TIME_MANUALLY = "ACTION_SETUP_TIME_MANUALLY";
+    public static final String ACTION_SETUP_TIME_AUTOMATICALLY = "ACTION_SETUP_TIME_AUTOMATICALLY";
+
+
+
 
 }

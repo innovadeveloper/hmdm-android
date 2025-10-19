@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -295,6 +296,10 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
         buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SYSTEM_BUTTONS", ACTION_LOCK_KIOSK_SYSTEM_BUTTONS));
         buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_STRICT", ACTION_LOCK_KIOSK_STRICT));
         buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SHOW_HOME_ONLY", ACTION_LOCK_KIOSK_SHOW_HOME_ONLY));
+        buttons.add(new DynamicButton("ACTION_SETUP_TIME_MANUALLY", ACTION_SETUP_TIME_MANUALLY));
+        buttons.add(new DynamicButton("ACTION_SETUP_TIME_AUTOMATICALLY", ACTION_SETUP_TIME_AUTOMATICALLY));
+
+
 
         dynamicButtonAdapter.setDynamicButtons(buttons);
     }
@@ -367,6 +372,12 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
                 break;
             case ACTION_LOCK_KIOSK_SHOW_HOME_ONLY:
                 enableKioskShowHomeOnly();
+                break;
+            case ACTION_SETUP_TIME_MANUALLY:
+                setupTimeManually();
+                break;
+            case ACTION_SETUP_TIME_AUTOMATICALLY:
+                setupTimeAutomatically();
                 break;
             default:
                 Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
@@ -530,6 +541,26 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
             pair.second.setLockTaskFeatures(pair.first, flags);
         }
         Toast.makeText(this, "enableKioskShowHomeOnly done", Toast.LENGTH_LONG).show();
+    }
+
+    public void setupTimeManually() {
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME, "0");
+            pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME_ZONE, "0");
+            long oneHourEarlier = System.currentTimeMillis() - 3600000; // 1 hora menos
+
+            pair.second.setTime(pair.first, oneHourEarlier);
+        }
+        Toast.makeText(this, "setupTimeManually done", Toast.LENGTH_LONG).show();
+    }
+    public void setupTimeAutomatically() {
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME, "1");
+            pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME_ZONE, "1");
+        }
+        Toast.makeText(this, "setupTimeAutomatically done", Toast.LENGTH_LONG).show();
     }
 
     private Pair<ComponentName, DevicePolicyManager> buildComponents(){
