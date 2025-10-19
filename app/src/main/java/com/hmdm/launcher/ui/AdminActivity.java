@@ -289,7 +289,13 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
 
         buttons.add(new DynamicButton("ACTION_LOCK_BRIGHTNESS", ACTION_LOCK_BRIGHTNESS));
         buttons.add(new DynamicButton("ACTION_UNLOCK_BRIGHTNESS", ACTION_UNLOCK_BRIGHTNESS));
-        
+
+
+        buttons.add(new DynamicButton("ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE", ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE));
+        buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SYSTEM_BUTTONS", ACTION_LOCK_KIOSK_SYSTEM_BUTTONS));
+        buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_STRICT", ACTION_LOCK_KIOSK_STRICT));
+        buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SHOW_HOME_ONLY", ACTION_LOCK_KIOSK_SHOW_HOME_ONLY));
+
         dynamicButtonAdapter.setDynamicButtons(buttons);
     }
 
@@ -348,6 +354,19 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
                 break;
             case ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS:
                 unlockErrorSystemDialog();
+                break;
+
+            case ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE:
+                lockTaskPackage();
+                break;
+            case ACTION_LOCK_KIOSK_SYSTEM_BUTTONS:
+                enableKioskHideSystemButtons();
+                break;
+            case ACTION_LOCK_KIOSK_STRICT:
+                enableKioskStrict();
+                break;
+            case ACTION_LOCK_KIOSK_SHOW_HOME_ONLY:
+                enableKioskShowHomeOnly();
                 break;
             default:
                 Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
@@ -439,6 +458,16 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
         }
     }
 
+    private void lockTaskPackage(){
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+        List<String> packages = new ArrayList<>();
+        packages.add("com.abexa.simple_app");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            pair.second.setLockTaskPackages(pair.first, packages.toArray(new String[0]));
+        }
+        Toast.makeText(this, "lockTaskPackage com.abexa.simple_app hardcoded", Toast.LENGTH_LONG).show();
+    }
+
     private void unlockErrorSystemDialog(){
         try {
             Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
@@ -451,6 +480,56 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
         } catch (Exception e) {
             RemoteLogger.log(this, Const.LOG_ERROR, "Failed to " + e.getMessage());
         }
+    }
+
+    /**
+     * 🔒 KIOSK MODE (HIDE SYSTEM BUTTONS : POWER AND REBOOT)
+     * Permite barra de estado, notificaciones, pero oculta menú de apagado/reinicio.
+     */
+    public void enableKioskHideSystemButtons() {
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+
+        int flags =
+                DevicePolicyManager.LOCK_TASK_FEATURE_HOME |
+                        DevicePolicyManager.LOCK_TASK_FEATURE_SYSTEM_INFO |
+                        DevicePolicyManager.LOCK_TASK_FEATURE_NOTIFICATIONS;
+        // No incluye GLOBAL_ACTIONS => Oculta "Apagar" / "Reiniciar"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pair.second.setLockTaskFeatures(pair.first, flags);
+        }
+        Toast.makeText(this, "enableKioskHideSystemButtons done", Toast.LENGTH_LONG).show();
+    }
+
+
+    /**
+     * 🚫 KIOSK MODE STRICT (LOCK_TASK_FEATURE_NONE)
+     * Bloqueo total: sin barra de estado, sin botones del sistema.
+     */
+    public void enableKioskStrict() {
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pair.second.setLockTaskFeatures(pair.first, DevicePolicyManager.LOCK_TASK_FEATURE_NONE);
+        }
+        Toast.makeText(this, "enableKioskStrict done", Toast.LENGTH_LONG).show();
+
+    }
+
+
+    /**
+     * 🏠 KIOSK MODE (HIDE RECENTS, HIDE RETURN, SHOW HOME)
+     * Solo permite el botón HOME (útil para kioskos con navegación controlada).
+     */
+    public void enableKioskShowHomeOnly() {
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+        int flags =
+                DevicePolicyManager.LOCK_TASK_FEATURE_HOME |
+                        DevicePolicyManager.LOCK_TASK_FEATURE_SYSTEM_INFO;
+        // No incluye RECENTS => oculta el botón de apps recientes
+        // No incluye GLOBAL_ACTIONS => oculta "Apagar"/"Reiniciar"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pair.second.setLockTaskFeatures(pair.first, flags);
+        }
+        Toast.makeText(this, "enableKioskShowHomeOnly done", Toast.LENGTH_LONG).show();
     }
 
     private Pair<ComponentName, DevicePolicyManager> buildComponents(){
