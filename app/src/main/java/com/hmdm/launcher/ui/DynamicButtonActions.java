@@ -13,8 +13,14 @@ public class DynamicButtonActions {
     public static final String ACTION_RESET_NETWORK = "reset_network";
     public static final String ACTION_REBOOT = "reboot";
     public static final String ACTION_RESET_SETTINGS = "reset_settings";
-    
+
     // Acciones de control del status bar
-    public static final String ACTION_LOCK_STATUS_BAR = "lock_status_bar";
-    public static final String ACTION_UNLOCK_STATUS_BAR = "unlock_status_bar";
+    public static final String ACTION_LOCK_BRIGHTNESS = "ACTION_LOCK_BRIGHTNESS";
+    public static final String ACTION_UNLOCK_BRIGHTNESS = "ACTION_UNLOCK_BRIGHTNESS";
+    public static final String ACTION_LOCK_ADB = "ACTION_LOCK_ADB";
+    public static final String ACTION_UNLOCK_ADB = "ACTION_UNLOCK_ADB";
+    public static final String ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS = "ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS";
+    public static final String ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS = "ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS";
+
+
 }
