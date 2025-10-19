@@ -36,6 +36,8 @@ public class DynamicButtonActions {
 
     public static final String ACTION_SETUP_TIME_MANUALLY = "ACTION_SETUP_TIME_MANUALLY";
     public static final String ACTION_SETUP_TIME_AUTOMATICALLY = "ACTION_SETUP_TIME_AUTOMATICALLY";
+    public static final String LOCK_STATUS_BAR = "LOCK_STATUS_BAR";
+    public static final String UNLOCK_STATUS_BAR = "UNLOCK_STATUS_BAR";
 
 
 

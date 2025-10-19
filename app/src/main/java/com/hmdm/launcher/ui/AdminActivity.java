@@ -298,6 +298,8 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
         buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SHOW_HOME_ONLY", ACTION_LOCK_KIOSK_SHOW_HOME_ONLY));
         buttons.add(new DynamicButton("ACTION_SETUP_TIME_MANUALLY", ACTION_SETUP_TIME_MANUALLY));
         buttons.add(new DynamicButton("ACTION_SETUP_TIME_AUTOMATICALLY", ACTION_SETUP_TIME_AUTOMATICALLY));
+        buttons.add(new DynamicButton("LOCK_STATUS_BAR", LOCK_STATUS_BAR));
+        buttons.add(new DynamicButton("UNLOCK_STATUS_BAR", UNLOCK_STATUS_BAR));
 
 
 
@@ -376,8 +378,11 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
             case ACTION_SETUP_TIME_MANUALLY:
                 setupTimeManually();
                 break;
-            case ACTION_SETUP_TIME_AUTOMATICALLY:
-                setupTimeAutomatically();
+            case LOCK_STATUS_BAR:
+                lockStatusBar(true);
+                break;
+            case UNLOCK_STATUS_BAR:
+                lockStatusBar(false);
                 break;
             default:
                 Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
@@ -561,6 +566,14 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
             pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME_ZONE, "1");
         }
         Toast.makeText(this, "setupTimeAutomatically done", Toast.LENGTH_LONG).show();
+    }
+
+    public void lockStatusBar(boolean isEnabled) {
+        Pair<ComponentName, DevicePolicyManager> pair = buildComponents();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            pair.second.setStatusBarDisabled(pair.first, isEnabled);
+        }
+        Toast.makeText(this, "lockStatusBar -> " + isEnabled, Toast.LENGTH_LONG).show();
     }
 
     private Pair<ComponentName, DevicePolicyManager> buildComponents(){
