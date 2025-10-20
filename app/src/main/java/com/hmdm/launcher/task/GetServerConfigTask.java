@@ -162,6 +162,8 @@ import retrofit2.Response;
         Response<ServerConfigResponse> response = null;
         try {
             serverHost = settingsHelper.getBaseUrl();
+            String project = settingsHelper.getServerProject();
+            String cpuArch = Build.CPU_ABI;
             response = serverService.getServerConfig(settingsHelper.getServerProject(),
                     deviceId, signature, Build.CPU_ABI).execute();
         } catch (Exception e) {

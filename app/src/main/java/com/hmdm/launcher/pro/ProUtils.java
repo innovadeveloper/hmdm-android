@@ -208,28 +208,28 @@ public class ProUtils {
             RemoteLogger.log(activity, Const.LOG_INFO, "Lock task packages set: " + lockTaskPackages.size() + " apps");
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                dpm.setLockTaskPackages(adminComponent, lockTaskPackages.toArray(new String[0]));
+                dpm.setLockTaskPackages(adminComponent, lockTaskPackages.toArray(new String[0]));   // SOLO AUTORIZA A LAS aplicaciones están autorizadas a entrar en “Lock Task Mode”
             }
             Log.d(TAG, "Lock task packages set: " + lockTaskPackages);
 
             // 2. CONFIGURAR OPCIONES DE LOCK TASK BASADAS EN SERVERCONFIG
-            configureLockTaskFeatures(activity, dpm, adminComponent, config);
-            RemoteLogger.log(activity, Const.LOG_INFO, "Lock task features configured");
+//            configureLockTaskFeatures(activity, dpm, adminComponent, config);
+//            RemoteLogger.log(activity, Const.LOG_INFO, "Lock task features configured");
 
             // 3. CONFIGURAR BARRA DE ESTADO Y KEYGUARD
             configureStatusBarAndKeyguard(activity, dpm, adminComponent, config);
 
-            // 4. APLICAR RESTRICCIONES DE USUARIO
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                applyKioskRestrictions(activity, dpm, adminComponent, config);
-            }
+//            // 4. APLICAR RESTRICCIONES DE USUARIO
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                applyKioskRestrictions(activity, dpm, adminComponent, config);
+//            }
 
             // 5. OCULTAR APPS NO PERMITIDAS
-            hideNonKioskApps(activity, dpm, adminComponent, config);
-            RemoteLogger.log(activity, Const.LOG_INFO, "Non-kiosk apps hidden");
+//            hideNonKioskApps(activity, dpm, adminComponent, config);
+//            RemoteLogger.log(activity, Const.LOG_INFO, "Non-kiosk apps hidden");
 
             // 6. CONFIGURAR BOTONES (Power, Volume, etc.)
-            configurePhysicalButtons(activity, dpm, adminComponent, config);
+//            configurePhysicalButtons(activity, dpm, adminComponent, config);
 
             // 7. LANZAR LA APP EN LOCK TASK
             Intent intent = getKioskAppIntent(kioskApp, activity);
@@ -428,6 +428,7 @@ public class ProUtils {
             boolean disableStatusBar = config.getLockStatusBar() != null && config.getLockStatusBar();
             try {
                 dpm.setStatusBarDisabled(adminComponent, disableStatusBar);
+                RemoteLogger.log(context, Const.LOG_INFO, "setStatusBarDisabled: " + disableStatusBar + " .. done");
                 Log.d(TAG, "Status bar " + (disableStatusBar ? "DISABLED" : "ENABLED"));
             } catch (SecurityException e) {
                 Log.e(TAG, "Failed to set status bar state. Requires Device Owner.", e);
@@ -437,6 +438,7 @@ public class ProUtils {
             boolean disableKeyguard = config.getKioskKeyguard() == null || !config.getKioskKeyguard();
             try {
                 dpm.setKeyguardDisabled(adminComponent, disableKeyguard);
+                RemoteLogger.log(context, Const.LOG_INFO, "setKeyguardDisabled: " + disableKeyguard + " .. done");
                 Log.d(TAG, "Keyguard " + (disableKeyguard ? "DISABLED" : "ENABLED"));
             } catch (SecurityException e) {
                 Log.e(TAG, "Failed to set keyguard state. Requires Device Owner.", e);

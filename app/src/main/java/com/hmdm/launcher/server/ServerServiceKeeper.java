@@ -29,6 +29,7 @@ import com.hmdm.launcher.helper.SettingsHelper;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -81,21 +82,50 @@ public class ServerServiceKeeper {
         return createBuilder(baseUrl, readTimeout).build().create(ServerService.class);
     }
 
+//    private static Retrofit.Builder createBuilder(String baseUrl, long readTimeout) {
+//        Retrofit.Builder builder = new Retrofit.Builder();
+//        if (BuildConfig.TRUST_ANY_CERTIFICATE) {
+//            builder.client(UnsafeOkHttpClient.getUnsafeOkHttpClient());
+//        } else {
+//            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().
+//                    connectTimeout(Const.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).
+//                    readTimeout(readTimeout, TimeUnit.MILLISECONDS).
+//                    writeTimeout(Const.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+//            builder.client(clientBuilder.build());
+//        }
+//
+//        builder.baseUrl( baseUrl )
+//                .addConverterFactory( JacksonConverterFactory.create( new ObjectMapper()) );
+//
+//        return builder;
+//    }
+
     private static Retrofit.Builder createBuilder(String baseUrl, long readTimeout) {
         Retrofit.Builder builder = new Retrofit.Builder();
 
+        // 🔍 Configurar interceptor de logging
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        // Muestra todo: URL, headers y body
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient.Builder clientBuilder;
+
         if (BuildConfig.TRUST_ANY_CERTIFICATE) {
-            builder.client(UnsafeOkHttpClient.getUnsafeOkHttpClient());
+            // Si estás usando un cliente "inseguro", agrégale también el interceptor
+            clientBuilder = UnsafeOkHttpClient.getUnsafeOkHttpClient().newBuilder();
         } else {
-            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().
-                    connectTimeout(Const.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).
-                    readTimeout(readTimeout, TimeUnit.MILLISECONDS).
-                    writeTimeout(Const.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-            builder.client(clientBuilder.build());
+            clientBuilder = new OkHttpClient.Builder()
+                    .connectTimeout(Const.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
+                    .writeTimeout(Const.CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         }
 
-        builder.baseUrl( baseUrl )
-                .addConverterFactory( JacksonConverterFactory.create( new ObjectMapper()) );
+        // Añadir interceptor de logging
+        clientBuilder.addInterceptor(logging);
+
+        builder.client(clientBuilder.build())
+                .baseUrl(baseUrl)
+                .addConverterFactory(JacksonConverterFactory.create(new ObjectMapper()));
 
         return builder;
     }
