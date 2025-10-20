@@ -85,11 +85,24 @@ public class DynamicButtonAdapter extends RecyclerView.Adapter<DynamicButtonAdap
                 dynamicButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             }
 
-            dynamicButton.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onDynamicButtonClick(button);
-                }
-            });
+            if(button.isLongClick()){
+                dynamicButton.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        if (listener != null) {
+                            listener.onDynamicButtonClick(button);
+                        }
+                        return true;
+                    }
+                });
+            }else{
+                dynamicButton.setOnClickListener(v -> {
+                    if (listener != null) {
+                        listener.onDynamicButtonClick(button);
+                    }
+                });
+            }
+
         }
     }
 }

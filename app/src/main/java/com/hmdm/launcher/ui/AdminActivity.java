@@ -57,6 +57,7 @@ import com.hmdm.launcher.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.hmdm.launcher.ui.DynamicButtonActions.*;
 
@@ -264,43 +265,113 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
 
     private void loadDynamicButtons() {
         List<DynamicButton> buttons = new ArrayList<>();
-        
+
         // Botones originales de AdminActivity
-        buttons.add(new DynamicButton(getString(R.string.admin_allow_settings), ACTION_ALLOW_SETTINGS));
-        buttons.add(new DynamicButton(getString(R.string.admin_clear_restrictions), ACTION_CLEAR_RESTRICTIONS));
-        buttons.add(new DynamicButton(getString(R.string.admin_change_device_id), ACTION_CHANGE_DEVICE_ID));
-        buttons.add(new DynamicButton(getString(R.string.admin_change_server_url), ACTION_CHANGE_SERVER_URL));
-        buttons.add(new DynamicButton(getString(R.string.admin_refresh), ACTION_UPDATE_CONFIG));
-        buttons.add(new DynamicButton(getString(R.string.admin_exit), ACTION_EXIT_TO_SYSTEM_LAUNCHER));
-        buttons.add(new DynamicButton(getString(R.string.admin_reset_permissions), ACTION_RESET_PERMISSIONS));
-        buttons.add(new DynamicButton(getString(R.string.admin_reset_network), ACTION_RESET_NETWORK));
-        
-        // Solo agregar botón de reinicio si la versión lo permite
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            buttons.add(new DynamicButton(getString(R.string.reboot), ACTION_REBOOT));
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            buttons.add(new DynamicButton("RESET SETTINGS (DEV)", ACTION_RESET_SETTINGS, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    ProUtils.emergencyRemoveDeviceOwner(AdminActivity.this);
+                }
+            }));
+            buttons.add(new DynamicButton("", "", new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                }
+            }));
+            buttons.add(new DynamicButton("", "", new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                }
+            }));
+
+            buttons.add(new DynamicButton(getString(R.string.admin_allow_settings), ACTION_ALLOW_SETTINGS, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    allowSettings(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_clear_restrictions), ACTION_CLEAR_RESTRICTIONS, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    clearRestrictions(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_change_device_id), ACTION_CHANGE_DEVICE_ID, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    changeDeviceId(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_change_server_url), ACTION_CHANGE_SERVER_URL, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    changeServerUrl(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_refresh), ACTION_UPDATE_CONFIG, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    updateConfig(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_exit), ACTION_EXIT_TO_SYSTEM_LAUNCHER, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    exitToSystemLauncher(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_reset_permissions), ACTION_RESET_PERMISSIONS, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    resetPermissions(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.admin_reset_network), ACTION_RESET_NETWORK, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    resetNetworkPolicy(null);
+                }
+            }));
+            buttons.add(new DynamicButton(getString(R.string.reboot), ACTION_REBOOT, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    reboot(null);
+                }
+            }));
+
+            buttons.add(new DynamicButton("FECHA MANUAL -1H", ACTION_SETUP_TIME_MANUALLY, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    setupTimeManually();
+                }
+            }, true));
+            buttons.add(new DynamicButton("FECHA AUTOMATICA", ACTION_SETUP_TIME_AUTOMATICALLY, new Consumer<Void>() {
+                @Override
+                public void accept(Void unused) {
+                    setupTimeAutomatically();
+                }
+            }));
+//            // Botones de control del status bar
+//            buttons.add(new DynamicButton("ACTION_LOCK_ADB", ACTION_LOCK_ADB));
+//            buttons.add(new DynamicButton("ACTION_UNLOCK_ADB", ACTION_UNLOCK_ADB));
+//            buttons.add(new DynamicButton("ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS", ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS));
+//            buttons.add(new DynamicButton("ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS", ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS));
+//
+//            buttons.add(new DynamicButton("ACTION_LOCK_BRIGHTNESS", ACTION_LOCK_BRIGHTNESS));
+//            buttons.add(new DynamicButton("ACTION_UNLOCK_BRIGHTNESS", ACTION_UNLOCK_BRIGHTNESS));
+//
+//
+//            buttons.add(new DynamicButton("ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE", ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE));
+//            buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SYSTEM_BUTTONS", ACTION_LOCK_KIOSK_SYSTEM_BUTTONS));
+//            buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_STRICT", ACTION_LOCK_KIOSK_STRICT));
+//            buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SHOW_HOME_ONLY", ACTION_LOCK_KIOSK_SHOW_HOME_ONLY));
+//            buttons.add(new DynamicButton("ACTION_SETUP_TIME_MANUALLY", ACTION_SETUP_TIME_MANUALLY));
+//            buttons.add(new DynamicButton("ACTION_SETUP_TIME_AUTOMATICALLY", ACTION_SETUP_TIME_AUTOMATICALLY));
+//            buttons.add(new DynamicButton("LOCK_STATUS_BAR", LOCK_STATUS_BAR));
+//            buttons.add(new DynamicButton("UNLOCK_STATUS_BAR", UNLOCK_STATUS_BAR));
+
         }
-        
-        buttons.add(new DynamicButton("RESET SETTINGS (DEV)", ACTION_RESET_SETTINGS));
-        
-        // Botones de control del status bar
-        buttons.add(new DynamicButton("ACTION_LOCK_ADB", ACTION_LOCK_ADB));
-        buttons.add(new DynamicButton("ACTION_UNLOCK_ADB", ACTION_UNLOCK_ADB));
-        buttons.add(new DynamicButton("ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS", ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS));
-        buttons.add(new DynamicButton("ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS", ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS));
-
-        buttons.add(new DynamicButton("ACTION_LOCK_BRIGHTNESS", ACTION_LOCK_BRIGHTNESS));
-        buttons.add(new DynamicButton("ACTION_UNLOCK_BRIGHTNESS", ACTION_UNLOCK_BRIGHTNESS));
-
-
-        buttons.add(new DynamicButton("ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE", ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE));
-        buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SYSTEM_BUTTONS", ACTION_LOCK_KIOSK_SYSTEM_BUTTONS));
-        buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_STRICT", ACTION_LOCK_KIOSK_STRICT));
-        buttons.add(new DynamicButton("ACTION_LOCK_KIOSK_SHOW_HOME_ONLY", ACTION_LOCK_KIOSK_SHOW_HOME_ONLY));
-        buttons.add(new DynamicButton("ACTION_SETUP_TIME_MANUALLY", ACTION_SETUP_TIME_MANUALLY));
-        buttons.add(new DynamicButton("ACTION_SETUP_TIME_AUTOMATICALLY", ACTION_SETUP_TIME_AUTOMATICALLY));
-        buttons.add(new DynamicButton("LOCK_STATUS_BAR", LOCK_STATUS_BAR));
-        buttons.add(new DynamicButton("UNLOCK_STATUS_BAR", UNLOCK_STATUS_BAR));
-
 
 
         dynamicButtonAdapter.setDynamicButtons(buttons);
@@ -309,7 +380,7 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
     @Override
     public void onDynamicButtonClick(DynamicButton button) {
         String action = button.getAction();
-        
+
         switch (action) {
             // Acciones originales de AdminActivity
             case ACTION_ALLOW_SETTINGS:
@@ -342,65 +413,57 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
             case ACTION_RESET_SETTINGS:
                 ProUtils.emergencyRemoveDeviceOwner(this);
                 break;
-                
-            // Acciones de control del status bar
-            case ACTION_LOCK_BRIGHTNESS:
-                lockBrightness();
-                break;
-            case ACTION_UNLOCK_BRIGHTNESS:
-                unlockBrightness();
-                break;
-            case ACTION_LOCK_ADB:
-                lockADB();
-                break;
-            case ACTION_UNLOCK_ADB:
-                unlockADB();
-                break;
-            case ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS:
-                lockErrorSystemDialog();
-                break;
-            case ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS:
-                unlockErrorSystemDialog();
-                break;
 
-            case ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE:
-                lockTaskPackage();
-                break;
-            case ACTION_LOCK_KIOSK_SYSTEM_BUTTONS:
-                enableKioskHideSystemButtons();
-                break;
-            case ACTION_LOCK_KIOSK_STRICT:
-                enableKioskStrict();
-                break;
-            case ACTION_LOCK_KIOSK_SHOW_HOME_ONLY:
-                enableKioskShowHomeOnly();
-                break;
-            case ACTION_SETUP_TIME_MANUALLY:
-                setupTimeManually();
-                break;
-            case LOCK_STATUS_BAR:
-                lockStatusBar(true);
-                break;
-            case UNLOCK_STATUS_BAR:
-                lockStatusBar(false);
-                break;
+//            // Acciones de control del status bar
+//            case ACTION_LOCK_BRIGHTNESS:
+//                lockBrightness();
+//                break;
+//            case ACTION_UNLOCK_BRIGHTNESS:
+//                unlockBrightness();
+//                break;
+//            case ACTION_LOCK_ADB:
+//                lockADB();
+//                break;
+//            case ACTION_UNLOCK_ADB:
+//                unlockADB();
+//                break;
+//            case ACTION_LOCK_DISALLOW_SYSTEM_ERROR_DIALOGS:
+//                lockErrorSystemDialog();
+//                break;
+//            case ACTION_UNLOCK_DISALLOW_SYSTEM_ERROR_DIALOGS:
+//                unlockErrorSystemDialog();
+//                break;
+//
+//            case ACTION_LOCK_TASK_PACKAGE_KIOSK_MODE:
+//                lockTaskPackage();
+//                break;
+//            case ACTION_LOCK_KIOSK_SYSTEM_BUTTONS:
+//                enableKioskHideSystemButtons();
+//                break;
+//            case ACTION_LOCK_KIOSK_STRICT:
+//                enableKioskStrict();
+//                break;
+//            case ACTION_LOCK_KIOSK_SHOW_HOME_ONLY:
+//                enableKioskShowHomeOnly();
+//                break;
+//            case ACTION_SETUP_TIME_MANUALLY:
+//                setupTimeManually();
+//                break;
+//            case LOCK_STATUS_BAR:
+//                lockStatusBar(true);
+//                break;
+//            case UNLOCK_STATUS_BAR:
+//                lockStatusBar(false);
+//                break;
             default:
-                Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    button.getClosure().accept(null);
+                }
+//                Toast.makeText(this, "Acción: " + button.getTitle(), Toast.LENGTH_SHORT).show();
                 break;
         }
     }
 
-    public void addDynamicButton(String title, String action) {
-        if (dynamicButtonAdapter != null) {
-            dynamicButtonAdapter.addDynamicButton(new DynamicButton(title, action));
-        }
-    }
-
-    public void clearDynamicButtons() {
-        if (dynamicButtonAdapter != null) {
-            dynamicButtonAdapter.clearDynamicButtons();
-        }
-    }
 
     private void lockBrightness(){
         try {
@@ -565,7 +628,6 @@ public class AdminActivity extends BaseActivity implements DynamicButtonAdapter.
             pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME, "1");
             pair.second.setGlobalSetting(pair.first, Settings.Global.AUTO_TIME_ZONE, "1");
         }
-        Toast.makeText(this, "setupTimeAutomatically done", Toast.LENGTH_LONG).show();
     }
 
     public void lockStatusBar(boolean isEnabled) {

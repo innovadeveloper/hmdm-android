@@ -874,36 +874,36 @@ public class ProUtils {
         Log.d(TAG, "Processing server config. Kiosk mode: " + config.getKioskMode() + ", Main app: " + config.getMainApp());
 
         // Procesar modo kiosko
-        if (config.getKioskMode() != null && config.getKioskMode()) {
-            String mainApp = config.getMainApp();
-            if (mainApp != null && !mainApp.isEmpty()) {
-                if (context instanceof Activity) {
-                    Activity activity = (Activity) context;
-
-                    // Verificar si la app kiosko está instalada
-                    if (isKioskAppInstalled(context)) {
-                        // Si la app principal NO es Headwind MDM, activar kiosko para app externa
-                        if (!mainApp.equals(context.getPackageName())) {
-                            Log.d(TAG, "Starting kiosk mode for external app: " + mainApp);
-                            startCosuKioskModeFromConfig(activity, config);
-                        } else {
-                            Log.d(TAG, "Main app is Headwind MDM, not starting external kiosk");
-                        }
-                    } else {
-                        Log.w(TAG, "Kiosk app not installed: " + mainApp);
-                        RemoteLogger.log(context, Const.LOG_WARN, "Kiosk app not found: " + mainApp);
-                    }
-                }
-            }
-        } else {
-            // Desactivar kiosko si está corriendo
-            if (isKioskModeRunning(context) && context instanceof Activity) {
-                Log.d(TAG, "Kiosk mode disabled in config, unlocking...");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    unlockKiosk((Activity) context);
-                }
-            }
-        }
+//        if (config.getKioskMode() != null && config.getKioskMode()) {
+//            String mainApp = config.getMainApp();
+//            if (mainApp != null && !mainApp.isEmpty()) {
+//                if (context instanceof Activity) {
+//                    Activity activity = (Activity) context;
+//
+//                    // Verificar si la app kiosko está instalada
+//                    if (isKioskAppInstalled(context)) {
+//                        // Si la app principal NO es Headwind MDM, activar kiosko para app externa
+//                        if (!mainApp.equals(context.getPackageName())) {
+//                            Log.d(TAG, "Starting kiosk mode for external app: " + mainApp);
+//                            startCosuKioskModeFromConfig(activity, config);
+//                        } else {
+//                            Log.d(TAG, "Main app is Headwind MDM, not starting external kiosk");
+//                        }
+//                    } else {
+//                        Log.w(TAG, "Kiosk app not installed: " + mainApp);
+//                        RemoteLogger.log(context, Const.LOG_WARN, "Kiosk app not found: " + mainApp);
+//                    }
+//                }
+//            }
+//        } else {
+//            // Desactivar kiosko si está corriendo
+//            if (isKioskModeRunning(context) && context instanceof Activity) {
+//                Log.d(TAG, "Kiosk mode disabled in config, unlocking...");
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    unlockKiosk((Activity) context);
+//                }
+//            }
+//        }
     }
 
     /**
